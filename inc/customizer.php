@@ -3,8 +3,8 @@
  * ColouRandom Customizer functionality
  *
  * @package WordPress
- * @subpackage ColourLovers
- * @since ColourLovers 1.0
+ * @subpackage ColouRandom
+ * @since ColouRandom 1.0
  */
 
 /**
@@ -14,47 +14,21 @@
  *
  * @param WP_Customize_Manager $wp_customize The Customizer object.
  */
-	$color_scheme = twentysixteen_get_color_scheme();
-	
-	class Customize_Button_Control extends WP_Customize_Control {
-		public $type = 'button';
-	 
-		public function render_content() {
-			?>
-			<label>
-				<span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
-				<button type="button">Go</button>
-			</label>
-			<?php
-		}
-	}
-	
 function colourandom_customize_register( $wp_customize ) {
 	$wp_customize->add_setting( 'randomize_color_scheme', array(
-		//'default'        => $color_scheme,
 		'transport'      => 'postMessage',
 	) );
-	
-	/*
-	$wp_customize->add_control( new Customize_Button_Control( $wp_customize, 'randomize_color_scheme', array(
-		'label'   => __( 'Randomize Color Scheme', 'colourlovers' ),
-		'section' => 'colors',
-		'settings'   => 'randomize_color_scheme',
-		'priority' => 1
-	) ) );
-	*/
-	
+
 	$wp_customize->add_control(
-		'your_control_id', 
+		'randomize_color_scheme',
 		array(
-			'label'    => __( 'Randomize Color Scheme', 'colourlovers' ),
+			'label'    => __( 'Randomize Color Scheme', 'colourandom' ),
 			'section'  => 'colors',
 			'settings' => 'randomize_color_scheme',
 			'type'     => 'checkbox',
 			'priority' => 1,
 		)
 	);
-	
 }
 add_action( 'customize_register', 'colourandom_customize_register', 11 );
 
@@ -71,12 +45,69 @@ function colourandom_customize_control_js() {
 }
 add_action( 'customize_controls_enqueue_scripts', 'colourandom_customize_control_js' );
 
-/**
- * Binds JS handlers to make the Customizer preview reload changes asynchronously.
- *
- * @since Twenty Sixteen 1.0
- */
-function colourlovers_customize_preview_js() {
-	wp_enqueue_script( 'colourlovers-customize-preview', get_stylesheet_directory_uri() . '/js/customize-preview.js', array( 'customize-preview' ), '20150922', true );
+function colourandom_customize_css() {
+	?>
+	<style>
+	#customize-control-randomize_color_scheme label {
+		position: relative;
+		display: inline-block;
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 26px;
+    height: 28px;
+    margin: 0;
+    padding: 0 10px 1px;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    -webkit-appearance: none;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    white-space: nowrap;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    color: #555;
+    border-color: #ccc;
+    background: #f7f7f7;
+    -webkit-box-shadow: 0 1px 0 #ccc;
+    box-shadow: 0 1px 0 #ccc;
+    vertical-align: top;
+	}
+	#customize-control-randomize_color_scheme label.dashicons-before::before {
+		position: absolute;
+		left: 100%;
+		margin-left: 10px;
+		margin-top: 3px;
+	}
+	#customize-control-randomize_color_scheme input[type="checkbox"] {
+		display: none;
+	}
+	.dashicons-before.dashicons-spin::before {
+		-webkit-animation: spin 2s infinite linear;
+		animation: spin 2s infinite linear;
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+	  100% {
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+	  100% {
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	</style>
+	<?php
 }
-add_action( 'customize_preview_init', 'colourlovers_customize_preview_js' );
+add_action('customize_controls_print_styles', 'colourandom_customize_css' );

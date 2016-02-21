@@ -20,123 +20,53 @@
 			'main_text_color',
 			'secondary_text_color'
 		],
-		newSettings = [
+		randomSettings = [
 			'randomize_color_scheme'
 		];
-	
-	_.each( newSettings, function( setting ) {
+
+	_.each( randomSettings, function( setting ) {
 		api( setting, function( setting ) {
 			setting.bind( function( value ) {
-				console.log( value );
-				
-				if ( value ) {
-					// get color scheme from ColourLovers
-					var rand = Math.floor(Math.random() * (50 - 1)) + 1;
-					var url = 'http://www.colourlovers.com/api/palettes/top?format=json&numResults=1&jsonCallback=_callback&resultOffset=' + rand;
-					jQuery.ajax({
-						url: url,
-						crossDomain: true,
-						dataType: 'jsonp',
-						jsonpCallback: '_callback',
-						complete: function(xhr, status) {
-							console.log('status:' + status);
-						},
-						success: function(data, status, xhr) {
-							console.log(data);
-							
-							if (data.length != undefined && data.length > 0) {
-								console.log(data[0]);
-								
-								if ( data[0].colors != undefined ) {
-									var colors = data[0].colors;
-									
-									// Update Background Color.
-									var color = colors[0];
-									api( 'background_color' ).set( color );
-									api.control( 'background_color' ).container.find( '.color-picker-hex' )
-										.data( 'data-default-color', color )
-										.wpColorPicker( 'defaultColor', color );
 
-									// Update Page Background Color.
-									color = colors[1];
-									api( 'page_background_color' ).set( color );
-									api.control( 'page_background_color' ).container.find( '.color-picker-hex' )
-										.data( 'data-default-color', color )
-										.wpColorPicker( 'defaultColor', color );
+				var loadingClasses = 'dashicons-before dashicons-update dashicons-spin';
 
-									// Update Link Color.
-									color = colors[2];
-									api( 'link_color' ).set( color );
-									api.control( 'link_color' ).container.find( '.color-picker-hex' )
-										.data( 'data-default-color', color )
-										.wpColorPicker( 'defaultColor', color );
+				var $label = jQuery('#customize-control-randomize_color_scheme label');
+				$label.addClass(loadingClasses);
 
-									// Update Main Text Color.
-									color = colors[3];
-									api( 'main_text_color' ).set( color );
-									api.control( 'main_text_color' ).container.find( '.color-picker-hex' )
-										.data( 'data-default-color', color )
-										.wpColorPicker( 'defaultColor', color );
-
-									// Update Secondary Text Color.
-									color = colors[4];
-									api( 'secondary_text_color' ).set( color );
-									api.control( 'secondary_text_color' ).container.find( '.color-picker-hex' )
-										.data( 'data-default-color', color )
-										.wpColorPicker( 'defaultColor', color );
-								}
+				// get random color scheme in top 200 picks from ColourLovers
+				var rand = Math.floor(Math.random() * (200 - 1)) + 1;
+				var url = 'http://www.colourlovers.com/api/palettes/top?format=json&numResults=1&jsonCallback=_callback&resultOffset=' + rand;
+				jQuery.ajax({
+					url: url,
+					crossDomain: true,
+					dataType: 'jsonp',
+					jsonpCallback: '_callback',
+					complete: function(xhr, status) {
+						$label.removeClass(loadingClasses)
+					},
+					success: function(data, status, xhr) {
+						if (data.length != undefined && data.length > 0) {
+							if ( data[0].colors != undefined ) {
+								var colors = data[0].colors;
+								parseColorArray(colors);
 							}
-						},
-						error: function(xhr, status, error) {
-							console.log(error);
 						}
-					});
-				}
-				
+					},
+					error: function(xhr, status, error) {
+						alert('There was a problem getting a color palette.');
+					}
+				});
+
 			} );
 		} );
 	} );
-	
+
 	api.controlConstructor.select = api.Control.extend( {
 		ready: function() {
 			if ( 'color_scheme' === this.id ) {
 				this.setting.bind( 'change', function( value ) {
 					var colors = colorScheme[value].colors;
-
-					// Update Background Color.
-					var color = colors[0];
-					api( 'background_color' ).set( color );
-					api.control( 'background_color' ).container.find( '.color-picker-hex' )
-						.data( 'data-default-color', color )
-						.wpColorPicker( 'defaultColor', color );
-
-					// Update Page Background Color.
-					color = colors[1];
-					api( 'page_background_color' ).set( color );
-					api.control( 'page_background_color' ).container.find( '.color-picker-hex' )
-						.data( 'data-default-color', color )
-						.wpColorPicker( 'defaultColor', color );
-
-					// Update Link Color.
-					color = colors[2];
-					api( 'link_color' ).set( color );
-					api.control( 'link_color' ).container.find( '.color-picker-hex' )
-						.data( 'data-default-color', color )
-						.wpColorPicker( 'defaultColor', color );
-
-					// Update Main Text Color.
-					color = colors[3];
-					api( 'main_text_color' ).set( color );
-					api.control( 'main_text_color' ).container.find( '.color-picker-hex' )
-						.data( 'data-default-color', color )
-						.wpColorPicker( 'defaultColor', color );
-
-					// Update Secondary Text Color.
-					color = colors[4];
-					api( 'secondary_text_color' ).set( color );
-					api.control( 'secondary_text_color' ).container.find( '.color-picker-hex' )
-						.data( 'data-default-color', color )
-						.wpColorPicker( 'defaultColor', color );
+					parseColorArray(colors);
 				} );
 			}
 		}
@@ -169,5 +99,42 @@
 			setting.bind( updateCSS );
 		} );
 	} );
-	
+
+	function parseColorArray(colors) {
+		// Update Background Color.
+		var color = colors[0];
+		api( 'background_color' ).set( color );
+		api.control( 'background_color' ).container.find( '.color-picker-hex' )
+			.data( 'data-default-color', color )
+			.wpColorPicker( 'defaultColor', color );
+
+		// Update Page Background Color.
+		color = colors[1];
+		api( 'page_background_color' ).set( color );
+		api.control( 'page_background_color' ).container.find( '.color-picker-hex' )
+			.data( 'data-default-color', color )
+			.wpColorPicker( 'defaultColor', color );
+
+		// Update Link Color.
+		color = colors[2];
+		api( 'link_color' ).set( color );
+		api.control( 'link_color' ).container.find( '.color-picker-hex' )
+			.data( 'data-default-color', color )
+			.wpColorPicker( 'defaultColor', color );
+
+		// Update Main Text Color.
+		color = colors[3];
+		api( 'main_text_color' ).set( color );
+		api.control( 'main_text_color' ).container.find( '.color-picker-hex' )
+			.data( 'data-default-color', color )
+			.wpColorPicker( 'defaultColor', color );
+
+		// Update Secondary Text Color.
+		color = colors[4];
+		api( 'secondary_text_color' ).set( color );
+		api.control( 'secondary_text_color' ).container.find( '.color-picker-hex' )
+			.data( 'data-default-color', color )
+			.wpColorPicker( 'defaultColor', color );
+	}
+
 } )( wp.customize );
