@@ -16,7 +16,8 @@
  */
 function colourandom_customize_register( $wp_customize ) {
 	$wp_customize->add_setting( 'randomize_color_scheme', array(
-		'transport'      => 'postMessage',
+		'transport'         => 'postMessage',
+		'sanitize_callback' => 'colourandom_sanitize_checkbox',
 	) );
 
 	$wp_customize->add_control(
@@ -111,3 +112,17 @@ function colourandom_customize_css() {
 	<?php
 }
 add_action('customize_controls_print_styles', 'colourandom_customize_css' );
+
+/**
+ * Checkbox sanitization callback example.
+ *
+ * Sanitization callback for 'checkbox' type controls. This callback sanitizes `$checked`
+ * as a boolean value, either TRUE or FALSE.
+ *
+ * @param bool $checked Whether the checkbox is checked.
+ * @return bool Whether the checkbox is checked.
+ */
+function colourandom_sanitize_checkbox( $checked ) {
+	// Boolean check.
+	return ( ( isset( $checked ) && true == $checked ) ? true : false );
+}
