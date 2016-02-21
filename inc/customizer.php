@@ -1,6 +1,6 @@
 <?php
 /**
- * ColourLovers Customizer functionality
+ * ColouRandom Customizer functionality
  *
  * @package WordPress
  * @subpackage ColourLovers
@@ -10,11 +10,10 @@
 /**
  * Adds postMessage support for site title and description for the Customizer.
  *
- * @since ColourLovers 1.0
+ * @since ColouRandom 1.0
  *
  * @param WP_Customize_Manager $wp_customize The Customizer object.
  */
-function colourlovers_customize_register( $wp_customize ) {
 	$color_scheme = twentysixteen_get_color_scheme();
 	
 	class Customize_Button_Control extends WP_Customize_Control {
@@ -30,6 +29,7 @@ function colourlovers_customize_register( $wp_customize ) {
 		}
 	}
 	
+function colourandom_customize_register( $wp_customize ) {
 	$wp_customize->add_setting( 'randomize_color_scheme', array(
 		//'default'        => $color_scheme,
 		'transport'      => 'postMessage',
@@ -56,20 +56,20 @@ function colourlovers_customize_register( $wp_customize ) {
 	);
 	
 }
-add_action( 'customize_register', 'colourlovers_customize_register', 11 );
+add_action( 'customize_register', 'colourandom_customize_register', 11 );
 
 /**
  * Binds the JS listener to make Customizer color_scheme control.
  *
  * Passes color scheme data as colorScheme global.
  *
- * @since Twenty Sixteen 1.0
+ * @since ColouRandom 1.0
  */
-function colourlovers_customize_control_js() {
+function colourandom_customize_control_js() {
 	wp_enqueue_script( 'color-scheme-control', get_stylesheet_directory_uri() . '/js/color-scheme-control.js', array( 'customize-controls', 'iris', 'underscore', 'wp-util' ), '20150926', true );
 	wp_localize_script( 'color-scheme-control', 'colorScheme', twentysixteen_get_color_scheme() );
 }
-add_action( 'customize_controls_enqueue_scripts', 'colourlovers_customize_control_js' );
+add_action( 'customize_controls_enqueue_scripts', 'colourandom_customize_control_js' );
 
 /**
  * Binds JS handlers to make the Customizer preview reload changes asynchronously.

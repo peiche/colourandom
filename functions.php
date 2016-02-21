@@ -1,7 +1,7 @@
 <?php
-	
+
 /**
- * ColourLovers functions and definitions
+ * ColouRandom functions and definitions
  **/
 
 /**
